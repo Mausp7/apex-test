@@ -14,7 +14,6 @@ const MovieCard = ({
 	getSearchResults,
 }) => {
 	const [wikiExtract, setWikiExtract] = useState(null);
-	const [imdbLink, setImdbLink] = useState(null);
 
 	const getExtract = async () => {
 		const response = await getWikiExtract(movieDetails.pageid);
@@ -24,18 +23,19 @@ const MovieCard = ({
 		setWikiExtract(response.data.query.pages[movieDetails.pageid]);
 	};
 
-	const getImdbLink = async () => {
+	useEffect(() => {
+		getExtract();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	const openImdbPage = async () => {
 		const response = await getImdbId(movie.name);
 		if (response.status !== 200) return;
 
-		setImdbLink(`https://www.imdb.com/title/${response.data.results[0].id}`);
+		window.open(`https://www.imdb.com/title/${response.data.results[0].id}`, {
+			target: "_blank",
+		});
 	};
-
-	useEffect(() => {
-		getExtract();
-		getImdbLink();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
 
 	return (
 		<Grid
@@ -90,12 +90,7 @@ const MovieCard = ({
 				variant="outlined"
 				fullWidth={true}
 				style={{ margin: "5px 0px" }}
-				disabled={!imdbLink}
-				onClick={() =>
-					window.open(imdbLink, {
-						target: "_blank",
-					})
-				}
+				onClick={openImdbPage}
 			>
 				Read more on IMDB
 			</Button>
