@@ -50,7 +50,7 @@ function App() {
 							type="inputText"
 							variant="outlined"
 							label="Movie tile"
-							placeholder="i.e. Jurassic Park"
+							placeholder="e. g. Jurassic Park"
 							fullWidth={true}
 							margin="normal"
 							value={inputText}

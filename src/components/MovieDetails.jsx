@@ -3,19 +3,29 @@ import { Button } from "@mui/material";
 
 import { getWikiExtract } from "../api/wikiApi";
 import Spinner from "../util/Spinner";
+import { getImdbId } from "../api/imdbApi";
 
 const MovieCard = ({ movie, movieDetails }) => {
 	const [wikiExtract, setWikiExtract] = useState(null);
+	const [imdbLink, setImdbLink] = useState("");
+
+	const getExtract = async () => {
+		const response = await getWikiExtract(movieDetails.pageid);
+		if (response.status !== 200) return setWikiExtract("");
+
+		setWikiExtract(response.data.query.pages[movieDetails.pageid]);
+	};
+
+	const getImdbLink = async () => {
+		const response = await getImdbId(movie.name);
+		if (response.status !== 200) return;
+
+		setImdbLink(`https://www.imdb.com/title/${response.data.results[0].id}`);
+	};
 
 	useEffect(() => {
-		const getExtract = async () => {
-			const response = await getWikiExtract(movieDetails.pageid);
-			if (response.status !== 200) setWikiExtract("");
-
-			setWikiExtract(response.data.query.pages[movieDetails.pageid]);
-		};
-
 		getExtract();
+		getImdbLink();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -39,6 +49,17 @@ const MovieCard = ({ movie, movieDetails }) => {
 				onClick={() => window.open(movieDetails.fullurl, { target: "_blank" })}
 			>
 				Read more on Wikipedia
+			</Button>
+			<Button
+				variant="outlined"
+				fullWidth={true}
+				onClick={() =>
+					window.open(imdbLink, {
+						target: "_blank",
+					})
+				}
+			>
+				Read more on IMDB
 			</Button>
 		</>
 	);
