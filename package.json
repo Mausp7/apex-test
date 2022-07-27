@@ -1,6 +1,7 @@
 {
   "name": "apex-test",
   "version": "0.1.0",
+  "homepage": "https://mausp7.github.io/apex-test/",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.9.3",
