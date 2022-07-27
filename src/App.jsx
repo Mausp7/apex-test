@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
+import theme from "./util/theme";
+
 import FormControl from "@mui/material/FormControl";
 import { TextField, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-
-import theme from "./util/theme";
+import Grid from "@mui/material/Grid";
 
 import searchTitle from "./api/tmdbApi";
-import Spinner from "./util/Spinner";
 import MovieCard from "./components/MovieCard";
-import Grid from "@mui/material/Grid";
+import Spinner from "./util/Spinner";
 
 function App() {
 	const [inputText, setInputText] = useState("");
@@ -17,13 +17,13 @@ function App() {
 
 	const [spinner, setSpinner] = useState(false);
 
-	const getSearchResults = async (event) => {
+	const getSearchResults = async (event, searchText) => {
 		event.preventDefault();
 		if (inputText === "") return;
 
 		setMovieData(null);
 		setSpinner(true);
-		const response = await searchTitle(inputText);
+		const response = await searchTitle(searchText);
 
 		if (response.status !== 200) return setSpinner(false);
 
@@ -44,7 +44,7 @@ function App() {
 							margin: "0px auto",
 							padding: "0px 15px",
 						}}
-						onSubmit={(event) => getSearchResults(event)}
+						onSubmit={(event) => getSearchResults(event, inputText)}
 					>
 						<TextField
 							type="inputText"
@@ -69,10 +69,16 @@ function App() {
 				</FormControl>
 
 				{spinner && <Spinner />}
+
 				{movieData && (
-					<Grid container spacing={2}>
+					<Grid container spacing={3} style={{ padding: "20px" }}>
 						{movieData.map((movie) => (
-							<MovieCard key={movie.id} movie={movie} />
+							<MovieCard
+								key={movie.id}
+								movie={movie}
+								setInputText={setInputText}
+								getSearchResults={getSearchResults}
+							/>
 						))}
 					</Grid>
 				)}

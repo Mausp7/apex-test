@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
+import { Button } from "@mui/material";
+
 import { getWikiExtract } from "../api/wikiApi";
 import Spinner from "../util/Spinner";
 
-const MovieCard = ({ movie, movieDetails, setMovieDetails }) => {
+const MovieCard = ({ movie, movieDetails }) => {
 	const [wikiExtract, setWikiExtract] = useState(null);
 
 	useEffect(() => {
 		const getExtract = async () => {
 			const response = await getWikiExtract(movieDetails.pageid);
+			if (response.status !== 200) setWikiExtract("");
 
-			if (response.status === 200) {
-				setWikiExtract(response.data.query.pages[movieDetails.pageid]);
-			}
+			setWikiExtract(response.data.query.pages[movieDetails.pageid]);
 		};
 
 		getExtract();
@@ -31,13 +32,14 @@ const MovieCard = ({ movie, movieDetails, setMovieDetails }) => {
 			) : (
 				<Spinner />
 			)}
-			<button
+
+			<Button
+				variant="outlined"
+				fullWidth={true}
 				onClick={() => window.open(movieDetails.fullurl, { target: "_blank" })}
 			>
 				Read more on Wikipedia
-			</button>
-
-			<button onClick={() => setMovieDetails(null)}>Close</button>
+			</Button>
 		</>
 	);
 };
