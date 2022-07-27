@@ -6,6 +6,11 @@ const getImdbId = async (movieName) => {
 			const response = await axios.get(
 				`https://imdb-api.com/en/API/SearchMovie/${process.env.REACT_APP_IMDB_PUBLIC_KEY}/${movieName}`
 			);
+            
+            if (response.data?.errorMessage) {
+                message("IMDB error: " + response.data.errorMessage);
+                return response.config;
+            }
 
 			return response;
 

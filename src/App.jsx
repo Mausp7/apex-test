@@ -71,7 +71,7 @@ function App() {
 				{spinner && <Spinner />}
 
 				{movieData && (
-					<Grid container spacing={3} style={{ padding: "20px" }}>
+					<Grid container spacing={5} style={{ padding: "30px 50px" }}>
 						{movieData.map((movie) => (
 							<MovieCard
 								key={movie.id}
