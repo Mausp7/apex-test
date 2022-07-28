@@ -43,7 +43,13 @@ const getWikiPage = async (wikiId) => {
 const getWikiExtract = async (pageId) => {
     try {
 		const response = await axios.get(
-			`https://en.wikipedia.org/w/api.php?format=json&action=query&origin=*&prop=extracts&exintro&pageids=${pageId}`
+			`https://en.wikipedia.org/w/api.php?
+			format=json&
+			action=query&
+			origin=*&
+			prop=extracts&
+			exintro&
+			pageids=${pageId}`
 		);
 
 		return response;
