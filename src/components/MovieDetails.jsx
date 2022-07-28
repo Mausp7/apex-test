@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { Button } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import TheatersIcon from "@mui/icons-material/Theaters";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 import { getWikiId, getWikiPage, getWikiExtract } from "../api/wikiApi";
 import Spinner from "../util/Spinner";
@@ -52,7 +56,7 @@ const MovieCard = ({
 
 	return (
 		<div
-			style={{ maxWidth: "700px", margin: "10px auto 20px", padding: "35px" }}
+			style={{ maxWidth: "600px", margin: "10px auto 20px", padding: "35px" }}
 		>
 			{spinner && <Spinner />}
 			<h2 style={{ minHeight: "45px", textAlign: "center" }}>
@@ -73,7 +77,7 @@ const MovieCard = ({
 
 			{wikiExtract && (
 				<p
-					style={{ textAlign: "justify" }}
+					style={{ margin: "30px 0px", textAlign: "justify" }}
 					dangerouslySetInnerHTML={{
 						__html: wikiExtract.extract.split("</p><p>")[0],
 					}}
@@ -84,6 +88,7 @@ const MovieCard = ({
 				variant="outlined"
 				fullWidth={true}
 				style={{ margin: "5px 0px" }}
+				startIcon={<AccountBalanceIcon />}
 				onClick={() => window.open(wikiData.fullurl, { target: "_blank" })}
 			>
 				Read more on Wikipedia
@@ -93,6 +98,7 @@ const MovieCard = ({
 				variant="outlined"
 				fullWidth={true}
 				style={{ margin: "5px 0px" }}
+				startIcon={<TheatersIcon />}
 				onClick={openImdbPage}
 			>
 				Read more on IMDB
@@ -102,6 +108,7 @@ const MovieCard = ({
 				variant="outlined"
 				fullWidth={true}
 				style={{ margin: "5px 0px" }}
+				startIcon={<OpenInNewIcon />}
 				onClick={(event) => {
 					setInputText(movieDetails.name);
 					getSearchResults(event, movieDetails.name);
@@ -114,6 +121,7 @@ const MovieCard = ({
 				variant="contained"
 				fullWidth={true}
 				style={{ margin: "10px 0px" }}
+				startIcon={<ArrowBackIcon />}
 				onClick={() => {
 					setMovieDetails(null);
 				}}

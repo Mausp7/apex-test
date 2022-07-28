@@ -19,7 +19,10 @@ const MovieCard = ({ movie, setMovieDetails }) => {
 					height: "300px",
 				}}
 			>
-				<h3 style={{ minHeight: "45px", textAlign: "center" }}>
+				<h3
+					style={{ minHeight: "45px", textAlign: "center", cursor: "pointer" }}
+					onClick={() => setMovieDetails(movie)}
+				>
 					{movie.name} ({new Date(movie.releaseDate).getFullYear()})
 				</h3>
 
