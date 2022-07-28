@@ -9,11 +9,14 @@ import Grid from "@mui/material/Grid";
 
 import searchTitle from "./api/tmdbApi";
 import MovieCard from "./components/MovieCard";
+import MovieDetails from "./components/MovieDetails";
 import Spinner from "./util/Spinner";
 
 function App() {
 	const [inputText, setInputText] = useState("");
-	const [movieData, setMovieData] = useState(null);
+	const [moviesList, setMoviesList] = useState(null);
+
+	const [movieDetails, setMovieDetails] = useState(null);
 
 	const [spinner, setSpinner] = useState(false);
 
@@ -21,20 +24,29 @@ function App() {
 		event.preventDefault();
 		if (inputText === "") return;
 
-		setMovieData(null);
+		setMoviesList(null);
+		setMovieDetails(null);
 		setSpinner(true);
 		const response = await searchTitle(searchText);
 
 		if (response.status !== 200) return setSpinner(false);
 
-		setMovieData(response.data.data.searchMovies);
+		setMoviesList(response.data.data.searchMovies);
 		setSpinner(false);
 	};
 
 	return (
 		<>
 			<ThemeProvider theme={theme}>
-				<h1 style={{ width: "100%", textAlign: "center" }}>Movie Search App</h1>
+				<h1
+					style={{
+						width: "100%",
+						margin: "50px 0px 20px",
+						textAlign: "center",
+					}}
+				>
+					Movie Search App
+				</h1>
 
 				<FormControl fullWidth={true} style={{ margin: "20px 0px" }}>
 					<form
@@ -70,17 +82,25 @@ function App() {
 
 				{spinner && <Spinner />}
 
-				{movieData && (
+				{moviesList && !movieDetails && (
 					<Grid container spacing={5} style={{ padding: "30px 50px" }}>
-						{movieData.map((movie) => (
+						{moviesList.map((movie) => (
 							<MovieCard
 								key={movie.id}
 								movie={movie}
-								setInputText={setInputText}
-								getSearchResults={getSearchResults}
+								setMovieDetails={setMovieDetails}
 							/>
 						))}
 					</Grid>
+				)}
+
+				{movieDetails && (
+					<MovieDetails
+						movieDetails={movieDetails}
+						setMovieDetails={setMovieDetails}
+						setInputText={setInputText}
+						getSearchResults={getSearchResults}
+					/>
 				)}
 			</ThemeProvider>
 		</>

@@ -1,71 +1,74 @@
 import { useEffect, useState } from "react";
 import { Button } from "@mui/material";
-import Grid from "@mui/material/Grid";
 
-import { getWikiExtract } from "../api/wikiApi";
+import { getWikiId, getWikiPage, getWikiExtract } from "../api/wikiApi";
 import Spinner from "../util/Spinner";
 import { getImdbId } from "../api/imdbApi";
 
 const MovieCard = ({
-	movie,
 	movieDetails,
 	setMovieDetails,
 	setInputText,
 	getSearchResults,
 }) => {
+	const [wikiData, setWikiData] = useState(null);
 	const [wikiExtract, setWikiExtract] = useState(null);
+	const [spinner, setSpinner] = useState(false);
 
-	const getExtract = async () => {
-		const response = await getWikiExtract(movieDetails.pageid);
-		if (response.status !== 200) return;
-		if (response.data.errorMessage) return;
+	const getWikiData = async () => {
+		setSpinner(true);
+		const wikiIdResponse = await getWikiId(movieDetails.name);
+		if (wikiIdResponse.status !== 200) return setSpinner(false);
 
-		setWikiExtract(response.data.query.pages[movieDetails.pageid]);
+		const wikiPageId = wikiIdResponse.data.query.search[0].pageid;
+		const wikiPageResponse = await getWikiPage(wikiPageId);
+		if (wikiPageResponse.status !== 200) return setSpinner(false);
+
+		setWikiData(wikiPageResponse.data.query.pages[wikiPageId]);
+
+		const response = await getWikiExtract(wikiPageId);
+		if (response.status !== 200) return setSpinner(false);
+		if (response.data.errorMessage) return setSpinner(false);
+
+		setWikiExtract(response.data.query.pages[wikiPageId]);
+		setSpinner(false);
 	};
 
 	useEffect(() => {
-		getExtract();
+		getWikiData();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const openImdbPage = async () => {
-		const response = await getImdbId(movie.name);
-		if (response.status !== 200) return;
+		setSpinner(true);
+		const response = await getImdbId(movieDetails.name);
+		if (response.status !== 200) return setSpinner(false);
 
+		setSpinner(false);
 		window.open(`https://www.imdb.com/title/${response.data.results[0].id}`, {
 			target: "_blank",
 		});
 	};
 
 	return (
-		<Grid
-			item
-			xs={12}
-			sm={12}
-			md={8}
-			lg={6}
-			xl={4}
-			style={{
-				display: "flex",
-				flexDirection: "column",
-				justifyContent: "space-between",
-				alignItems: "center",
-				minHeight: "300px",
-			}}
+		<div
+			style={{ maxWidth: "700px", margin: "10px auto 20px", padding: "35px" }}
 		>
+			{spinner && <Spinner />}
 			<h2 style={{ minHeight: "45px", textAlign: "center" }}>
-				{movie.name} ({new Date(movie.releaseDate).getFullYear()})
+				{movieDetails.name} ({new Date(movieDetails.releaseDate).getFullYear()})
 			</h2>
 
 			<p style={{ textAlign: "center" }}>
 				Genre:{" "}
-				{movie.genres.length !== 0
-					? movie.genres.map((genre) => genre.name).join(", ")
+				{movieDetails.genres.length !== 0
+					? movieDetails.genres.map((genre) => genre.name).join(", ")
 					: "Unknown"}
 			</p>
 
 			<p style={{ textAlign: "center" }}>
-				Rating: {movie.score > 0 ? movie.score.toFixed(1) : "Not rated"}
+				Rating:{" "}
+				{movieDetails.score > 0 ? movieDetails.score.toFixed(1) : "Not rated"}
 			</p>
 
 			{wikiExtract && (
@@ -81,7 +84,7 @@ const MovieCard = ({
 				variant="outlined"
 				fullWidth={true}
 				style={{ margin: "5px 0px" }}
-				onClick={() => window.open(movieDetails.fullurl, { target: "_blank" })}
+				onClick={() => window.open(wikiData.fullurl, { target: "_blank" })}
 			>
 				Read more on Wikipedia
 			</Button>
@@ -100,8 +103,8 @@ const MovieCard = ({
 				fullWidth={true}
 				style={{ margin: "5px 0px" }}
 				onClick={(event) => {
-					setInputText(movie.name);
-					getSearchResults(event, movie.name);
+					setInputText(movieDetails.name);
+					getSearchResults(event, movieDetails.name);
 				}}
 			>
 				Show related movies
@@ -115,11 +118,9 @@ const MovieCard = ({
 					setMovieDetails(null);
 				}}
 			>
-				Close
+				Back
 			</Button>
-
-			{!wikiExtract && <Spinner />}
-		</Grid>
+		</div>
 	);
 };
 
